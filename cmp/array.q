@@ -1,9 +1,8 @@
-chunk:{
- [arr;size]
- if[size<1;'`$"Chunk size"]
- retval:();
- while[0<c:count arr;
-  $[c>size;
-   [retval,:enlist size#arr; arr:(size-c)#arr];
-   [retval,:arr; arr:()]]];
- :retval}
+chunk:{y cut x}
+
+compact:{
+ [arr]
+ arr:arr[where {not null x} each arr];
+ :arr[where {x<>0} each arr]}
+
+difference:{x except y}
