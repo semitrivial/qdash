@@ -13,14 +13,18 @@ dropRight:{sublist[(0;(count x)-y);x]}
 
 dropRightWhile:{
  [arr;pred]
- if[100h=type[pred];          /Behavior if pred is a function
+ if[99h<type[pred];          /Behavior if pred is a function
   n:count[arr];
   while[and[n>0;pred[arr[til n]]]; n-:1];
   :arr[til n]];
- if[=[type[pred];99h];        /Behavior if pred is a dictionary
+ if[99h=type[pred];        /Behavior if pred is a dictionary
   n:count[arr];
-  while[all(n>0;99h=type arr[n-1];(count pred)=count inter[pred;arr[n-1]]); n-:1];
+  while[all(n>0;99h=type arr[n-1];arr[n-1;key pred]~value pred); n-:1];
   :arr[til n]];
  '`$"Type"}
 
-test:50
+dropWhile:{reverse dropRightWhile[reverse[x];{y[reverse[x]]}[;y]]}
+
+/
+fill:{[x;v;L;R]L|:0;R&:count[`.[x]];if[L<R;(`.[x])[L+til[R-L]]:v];:x}
+\
