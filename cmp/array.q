@@ -33,3 +33,60 @@ flatten:raze
 flattenDeep:{$[type x;:x;:(),/flattenDeep each raze x]}
 
 indexOf:{if[z<0;z+:count x];z|:0;i:sublist[(z;count x);x]?y;if[(i+z)<count x;:i+z];:-1}
+
+initial:{((count x)-1)#x}
+
+/
+Todo: figure out if there's a way to port
+lodash's "intersection" that makes sense
+with q's lack of variadic functions
+\
+
+.qdash.last:last
+
+lastIndexOf:{c:-1+count x;z:$[z<0;-1-z;c-z];i:indexOf[reverse x;y;z];:$[i=-1;-1;c-i]}
+
+pull:mutator[except;2]
+
+pullAt:mutator[{x[(til count x) except y]};2]
+
+filter:{y:fncify y;:exec c from ([]c:x) where y[c]}
+
+remove:mutator[filter;2]
+
+rest:{$[c:count x;(1-c)#x;0#x]}
+
+slice:{sublist[(y;z-y);x]}
+
+sortedIndex:{$[(count x)=i:x?y;:1+bin[x;y];:i]}
+
+sortedLastIndex:{1+bin[x;y]}
+
+take:{$[y>count x;:x;:y#x]}
+
+takeRight:{$[y>count x;:x;:(0-y)#x]}
+
+takeRightWhile:{y:fncify y;i:0;c:count x;while[and[i<c;y[(0-i)#x]];i+:1];:(0-i)#x}
+
+takeWhile:{y:fncify y;i:0;c:count x;while[and[i<c;y[i#x]];i+:1];:i#x}
+
+/
+Todo: figure out whether "union" can be ported in in a meaningful
+way, given the lack of variadic functions in q
+\
+
+uniq:distinct
+
+unzip:flip
+
+unzipWith:{y each [flip x]}
+
+without:except
+
+xor:{except[x;y],except[y;x]}
+
+zip:flip
+
+zipObject:{(),/{((enlist (x[0]))!(.qdash.rest x))} each x}
+
+zipWith:{y each [flip x]}
