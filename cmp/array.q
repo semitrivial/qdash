@@ -87,6 +87,6 @@ xor:{except[x;y],except[y;x]}
 
 zip:flip
 
-zipObject:{(),/{((enlist (x[0]))!(.qdash.rest x))} each x}
+zipObject:{(),/{((enlist (x[0]))!(rest x))} each x}
 
 zipWith:{y each [flip x]}
