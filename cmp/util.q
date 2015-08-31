@@ -1,3 +1,9 @@
+/Code Disclaimer:
+/Q is a strange language where the official idiom is to write
+/code as tersely as possible (including 1-letter variable names,
+/miserly use of newlines, etc.)  I wouldn't endorse such coding
+/style for languages other than q.
+
 fncify:{[p]
  if[99h<type p;:p];
  if[99h=type p;:{and[99h=type[x];x[key y]~value y]}[;p]];
