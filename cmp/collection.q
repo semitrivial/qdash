@@ -33,3 +33,31 @@ indexBy:{
 invoke:{map[x;y[;z]]}
 
 map:{y{x[y]}/:x}
+
+partition:{y:fncify y;m:map[x;y];:(x[where m<>0];x[where m=0])}
+
+pluck:{map[x;{x[y]}[;y]]}
+
+reduce:{y/[z;x]}
+
+reduceRight:{y/[z;reverse x]}
+
+reject:{y:fncify y;filter[x;{not[y[x]]}[;y]]}
+
+sample:{x[y?count x]}
+
+shuffle:{x[(neg c)?(c:count x)]}
+
+size:count
+
+some:{y:fncify y;not every[x;{not y[x]}[;y]]}
+
+sortBy:{x[iasc[map[x;y]]]}
+
+sortByAll:{if[0=count y;:x];
+ (),/{sortByAll[x;y]}[;rest y]each exec c from`v xasc`v xgroup([]c:x;v:y[0][x])}
+
+sortByOrder:{T:`asc`desc!(::;{{0-y[x]}[;x]});
+ sortByAll[x;{[x;y;z;T]T[z[x]][y[x]]}[;y;z;T] each til count z]}
+
+qdash.where:filter
