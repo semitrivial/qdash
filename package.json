@@ -1,0 +1,28 @@
+{
+  "name": "qdash",
+  "version": "0.1.0",
+  "description": "Port of lodash to q / kdb+",
+  "main": "qdash.q",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semitrivial/qdash.git"
+  },
+  "keywords": [
+    "q",
+    "kdb+",
+    "lodash"
+  ],
+  "author": "Sam Alexander",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/semitrivial/qdash/issues"
+  },
+  "homepage": "https://github.com/semitrivial/qdash#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0"
+  }
+}
