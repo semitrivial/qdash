@@ -1,18 +1,8 @@
 /xxx
-/base.q
+/preamble.q
 /xxx
 
 \d .qdash
-
-\l cmp/util.q
-\l cmp/array.q
-\l cmp/collection.q
-\l cmp/date.q
-\l cmp/chain.q
-
-\d .
-
-\
 
 /xxx
 /util.q
@@ -234,3 +224,9 @@ qdash.where:filter
 /xxx
 
 now:{[]floor (`float$(.z.z-1970.01.01T00:00:00.000))*86400000}
+
+/xxx
+/postamble.q
+/
+
+\

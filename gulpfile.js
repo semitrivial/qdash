@@ -2,7 +2,7 @@ var gulp = require('gulp');
 var concat = require('gulp-concat');
 
 gulp.task('default', function(){
-  gulp.src(['src/base.q', 'src/util.q', 'src/*.q'])
+  gulp.src(['src/preamble.q', 'src/util.q', 'src/*.q', 'src/postamble.q'])
   .pipe(concat('qdash.q'))
   .pipe(gulp.dest('./'));
 });
