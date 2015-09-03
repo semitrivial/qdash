@@ -10,10 +10,7 @@
 
 chunk:{y cut x}
 
-compact:{
- [arr]
- arr:arr[where {not null x} each arr];
- :arr[where {x<>0} each arr]}
+compact:{[arr]arr:arr[where {not null x} each arr];:arr[where {x<>0} each arr]}
 
 difference:except
 
@@ -36,7 +33,7 @@ findIndex:{y:fncify y;n:0;while[n<count x;if[y[x[n]];:n];n+:1];:-1}
 
 findLastIndex:{y:fncify y;n:(count x)-1;while[n>=0;if[y[x[n]];:n];n-:1];:-1}
 
-.qdash.first:{[x]:x[0]}
+.qdash.first:first
 
 flatten:raze
 
