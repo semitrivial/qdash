@@ -19,13 +19,14 @@ fncify:{[p]
  if[99h=type p;:{and[99h=type[x];x[key y]~value y]}[;p]];
  '`$"Predicate should be a function or a dictionary"}
 
-mutator:{[f;argc]
- if[argc=1;:{[x;f]X:`.[x];@[`.;x;:;f[X]];:x}[;f]];
- if[argc=2;:{[x;y;f]X:`.[x];@[`.;x;:;f[X;y]];:x}[;;f]];
- if[argc=3;:{[x;y;z;f]X:`.[x];@[`.;x;:;f[X;y;z]];:x}[;;;f]];
- if[argc=4;:{[x;y;z;t;f]X:`.[x];@[`.;x;:;f[X;y;z;t]];:x}[;;;;f]];
- '`$"Mutator currently only alters functions with valence 1/2/3/4"}
+Set:{eval(:;x;({[x;y]x}[y;];0));:x}
 
+mutator:{[f;argc]
+ if[argc=1;:{[x;f]:Set[x;f[eval[x]]]}[;f]];
+ if[argc=2;:{[x;y;f]:Set[x;f[eval[x];y]]}[;;f]];
+ if[argc=3;:{[x;y;z;f]:Set[x;f[eval[x];y;z]]}[;;;f]];
+ if[argc=4;:{[x;y;z;t;f]:Set[x;f[eval[x];y;z;t]]}[;;;;f]];
+ '`$"Mutator currently only alters functions with valence 1/2/3/4"}
 
 /xxx
 /array.q
@@ -221,6 +222,19 @@ qdash.where:filter
 /xxx
 
 now:{[]floor (`float$(.z.z-1970.01.01T00:00:00.000))*86400000}
+
+after:{[ptr;n;f]
+ eval(:;ptr;
+  $[n>1;
+   {[x;y;z;t]after[x;y;z]}[ptr;n-1;f;];
+   {[x]f[0]}]);:ptr}
+
+before:{[ptr;n;f]
+ eval(:;ptr;
+  $[n>1;
+   {[x;y;z;t]before[x;y;z];:z[0]}[ptr;n-1;f;];
+   {[ptr;f;z]f0:f[0];eval(:;ptr;{[x;y]:x}[f0;]);:f0}[ptr;f;]])}
+
 
 /xxx
 /postamble.q
