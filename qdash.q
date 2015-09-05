@@ -47,6 +47,26 @@ valence:{[f](valence_counters[type[f]])[f]}
 checktimer_:{[x]99h=type@[.timer;`timer]}
 checktimer:{[]@[checktimer_;0;0b]}
 
+about_timer:{[]
+  0N!"Timer-related qdash functions depend on Natalie Inkpin's timer.q library.";
+  0N!"The library is available at:";
+  0N!"http://code.kx.com/wsvn/code/contrib/aquaqanalytics/Utilities/timer.q";}
+
+ref:{({[x;y]x}[x];0)}
+
+unarize:{[f]{[f;x;v]eval(f,ref each x[v])}[f;;til valence[f]]}
+
+deunarize:{[f;v]
+  if[0=v;:{[f;x]f[()]}[f]];
+  if[1=v;:{[f;x]f[enlist x]}[f]];
+  if[2=v;:{[f;x;y]f[(x;y)]}[f]];
+  if[3=v;:{[f;x;y;z]f[(x;y;z)]}[f]];
+  if[4=v;:{[f;x;y;z;t]f[(x;y;z;t)]}[f]];
+  if[5=v;:{[f;x;y;z;t;u]f[(x;y;z;t;u)]}[f]];
+  if[6=v;:{[f;x;y;z;t;u;v]f[(x;y;z;t;u;v)]}[f]];
+  if[7=v;:{[f;x;y;z;t;u;v;w]f[(x;y;z;t;u;v;w)]}[f]];
+  '"deunarize: valency cannot be greater than 7"}
+
 /xxx
 /array.q
 /xxx
@@ -299,6 +319,51 @@ curryRight:{[f]
  v:valence[f];
  if[v>7;'`$"curryRight has valence limit 7"];
  :(curryRight_[v])[f]}
+
+timerIds:([hash:`guid$()]id:`int$())
+timerbydesc:{[dsc]:(exec id from .timer.timer where (dsc~) each description)[0];}
+timerbyhash:{[hash]:timerbydesc["Qdash timer ",string[hash]]}
+canceltimer:{[hsh;i].timer.remove[i];delete from `.qdash.timerIds where hash=hsh;}
+cncltmrhash:{canceltimer[x;timerbyhash[x]]}
+
+debounce_:{[h;f;w;x]
+ if[x~`cancel;:canceltimer[h]];
+ if[null[timerIds[h][`id]];
+   dsc:"Qdash timer ",string[h];
+   .timer.one[.z.p+w*1000000;(cncltmrhash;h);dsc;0];
+   id:timerbydesc[dsc];
+   timerIds,:`hash`id!(h;id);
+   :f[]];}
+debounce:{[f;w]
+  if[not[checktimer[]];'"Debounce requires timer.q; run .qdash.about_timer[] for more info"];
+  h:(1?0Ng)[0];
+  :debounce_[h;f;w;]}
+
+defer:{[f]
+  if[not[checktimer[]];'"Defer requires timer.q; run .qdash.about_timer[] for more info"];
+  if[0=.z.w;'"defer: can only be run when .z.w is not 0"];
+  h:(1?0Ng)[0];
+  F:{[f;h]if[0=.z.w;cncltmrhash[h];:f[]];}[f;];
+  dsc:"Qdash timer ",string[h];
+  .timer.rep[.z.p;.z.p+9999D00:00;0D00:00:00.1;(F;h);2h;dsc;0];}
+
+delay:{[f;w]
+  if[not[checktimer[]];'"Delay requires timer.q; run .qdash.about_timer[] for more info"];
+  h:(1?0Ng)[0];
+  dsc:"Qdash timer ",string[h];
+  .timer.one[.z.p+w*1000000;({[f;h].qdash.cncltmrhash[h];:f[]}[f;];h);dsc;0];}
+
+flow:{[x;y]{[x;y;z]x[y[z]]}[x;y;]}/
+
+flowRight:{flow[reverse[x]]}
+
+memoize:{[f;ptr]
+  set[ptr;([k:enlist[8#(::)]]v:enlist[8#(::)])];
+  F:{[f;ptr;x]
+    if[x in !:[ptr];:ptr[x][`v]];
+    insert[ptr;(x;v:f[x])];
+    :v}[unarize f;ptr;];
+  :deunarize[F;valence f]}
 
 /xxx
 /postamble.q

@@ -40,3 +40,23 @@ valence:{[f](valence_counters[type[f]])[f]}
 
 checktimer_:{[x]99h=type@[.timer;`timer]}
 checktimer:{[]@[checktimer_;0;0b]}
+
+about_timer:{[]
+  0N!"Timer-related qdash functions depend on Natalie Inkpin's timer.q library.";
+  0N!"The library is available at:";
+  0N!"http://code.kx.com/wsvn/code/contrib/aquaqanalytics/Utilities/timer.q";}
+
+ref:{({[x;y]x}[x];0)}
+
+unarize:{[f]{[f;x;v]eval(f,ref each x[v])}[f;;til valence[f]]}
+
+deunarize:{[f;v]
+  if[0=v;:{[f;x]f[()]}[f]];
+  if[1=v;:{[f;x]f[enlist x]}[f]];
+  if[2=v;:{[f;x;y]f[(x;y)]}[f]];
+  if[3=v;:{[f;x;y;z]f[(x;y;z)]}[f]];
+  if[4=v;:{[f;x;y;z;t]f[(x;y;z;t)]}[f]];
+  if[5=v;:{[f;x;y;z;t;u]f[(x;y;z;t;u)]}[f]];
+  if[6=v;:{[f;x;y;z;t;u;v]f[(x;y;z;t;u;v)]}[f]];
+  if[7=v;:{[f;x;y;z;t;u;v;w]f[(x;y;z;t;u;v;w)]}[f]];
+  '"deunarize: valency cannot be greater than 7"}
