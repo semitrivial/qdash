@@ -28,6 +28,25 @@ mutator:{[f;argc]
  if[argc=4;:{[x;y;z;t;f]:Set[x;f[eval[x];y;z;t]]}[;;;;f]];
  '`$"Mutator currently only alters functions with valence 1/2/3/4"}
 
+valence_counters:(`s#`short$())!()
+valence_counters,:(enlist 100h)!(enlist {count[(value x)[1]]}) / functions
+valence_counters,:(enlist 101h)!(enlist {1}) / unary primitives
+valence_counters,:(enlist 102h)!(enlist {2}) / binary primitives
+valence_counters,:(enlist 103h)!(enlist {3}) / ternary primitives
+valence_counters,:(enlist 104h)!(enlist {1+valence[(value x)[0]]-sum each[{not[~[x;::]]};value x]}) / projection
+valence_counters,:(enlist 105h)!(enlist {valence[(value x)[1]]})  / composition
+valence_counters,:(enlist 106h)!(enlist {valence[value x]})  / each-both
+valence_counters,:(enlist 107h)!(enlist {valence[value x]})  / over
+valence_counters,:(enlist 108h)!(enlist {valence[value x]})  / scan
+valence_counters,:(enlist 109h)!(enlist {valence[value x]})  / each-previous
+valence_counters,:(enlist 110h)!(enlist {valence[value x]})  / each-right
+valence_counters,:(enlist 111h)!(enlist {valence[value x]})  / each-left
+
+valence:{[f](valence_counters[type[f]])[f]}
+
+checktimer_:{[x]99h=type@[.timer;`timer]}
+checktimer:{[]@[checktimer_;0;0b]}
+
 /xxx
 /array.q
 /xxx
@@ -223,6 +242,16 @@ qdash.where:filter
 
 now:{[]floor (`float$(.z.z-1970.01.01T00:00:00.000))*86400000}
 
+/xxx
+/function.q
+/xxx
+
+/Code Disclaimer:
+/Q is a strange language where the official idiom is to write
+/code as tersely as possible (including 1-letter variable names,
+/miserly use of newlines, etc.)  I wouldn't endorse such coding
+/style for languages other than q.
+
 after:{[ptr;n;f]
  eval(:;ptr;
   $[n>1;
@@ -235,6 +264,41 @@ before:{[ptr;n;f]
    {[x;y;z;t]before[x;y;z];:z[0]}[ptr;n-1;f;];
    {[ptr;f;z]f0:f[0];eval(:;ptr;{[x;y]:x}[f0;]);:f0}[ptr;f;]])}
 
+ary_hlp1:("[f]";"[f;x1]";"[f;x1;x2]";"[f;x1;x2;x3]";"[f;x1;x2;x3;x4]";"[f;x1;x2;x3;x4;x5]";"[f;x1;x2;x3;x4;x5;x6]";"[f;x1;x2;x3;x4;x5;x6;x7]")
+ary_hlp2:("[]";"[x1]";"[x1;x2]";"[x1;x2;x3]";"[x1;x2;x3;x4]";"[x1;x2;x3;x4;x5]";"[x1;x2;x3;x4;x5;x6]";"[x1;x2;x3;x4;x5;x6;x7]")
+
+ary:{[f;n]
+ if[n<v:valence[f];'`$"New valence cap lower than initial valence"];
+ if[n>7;'`$"ary has valence limit of 7"];
+ if[n~v;:f];
+ :(value["{",ary_hlp1[n],"f",ary_hlp2[v],"}"])[f]}
+
+bind:{[f;x]
+ if[0=v:valence[f];`$"Cannot bind 'this' on a 0-valence function"];
+ if[1=v;:{[x;y]f[x]}[x]];
+ :f[x]}
+
+/
+Todo: think of a way that bindAll would make sense in q
+\
+
+bindKey:{[dict;k]{[this;k;x](this[k])[this]}[dict;k;]}
+
+curry:{x}
+
+curryRight_:({[f;x]f[]};
+ {[f;x]f[x]};
+ {[f;x;y]f[y;x]};
+ {[f;x;y;z]f[z;y;x]};
+ {[f;x;y;z;t]f[t;z;y;x]};
+ {[f;x1;x2;x3;x4;x5]f[x5;x4;x3;x2;x1]};
+ {[f;x1;x2;x3;x4;x5;x6]f[x6;x5;x4;x3;x2;x1]};
+ {[f;x1;x2;x3;x4;x5;x6;x7]f[x7;x6;x5;x4;x3;x2;x1]});
+
+curryRight:{[f]
+ v:valence[f];
+ if[v>7;'`$"curryRight has valence limit 7"];
+ :(curryRight_[v])[f]}
 
 /xxx
 /postamble.q
