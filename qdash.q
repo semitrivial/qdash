@@ -328,12 +328,13 @@ cncltmrhash:{canceltimer[x;timerbyhash[x]]}
 
 debounce_:{[h;f;w;x]
  if[x~`cancel;:canceltimer[h]];
- if[null[timerIds[h][`id]];
-   dsc:"Qdash timer ",string[h];
-   .timer.one[.z.p+w*1000000;(cncltmrhash;h);dsc;0];
-   id:timerbydesc[dsc];
-   timerIds,:`hash`id!(h;id);
-   :f[]];}
+ $[null[timerIds[h][`id]];
+   [dsc:"Qdash timer ",string[h];
+     .timer.one[.z.p+w*1000000;(cncltmrhash;h);dsc;0];
+     id:timerbydesc[dsc];
+     timerIds,:`hash`id!(h;id);
+     :f[]];
+   [update nextrun:.z.p+w*1000000 from `.timer.timer where id=.qdash.timerIds[h][`id];]]}
 debounce:{[f;w]
   if[not[checktimer[]];'"Debounce requires timer.q; run .qdash.about_timer[] for more info"];
   h:(1?0Ng)[0];
@@ -353,7 +354,7 @@ delay:{[f;w]
   dsc:"Qdash timer ",string[h];
   .timer.one[.z.p+w*1000000;({[f;h].qdash.cncltmrhash[h];:f[]}[f;];h);dsc;0];}
 
-flow:{[x;y]{[x;y;z]x[y[z]]}[x;y;]}/
+flow:{{x[y[z]]}[x;y;]}/
 
 flowRight:{flow[reverse[x]]}
 
@@ -364,6 +365,59 @@ memoize:{[f;ptr]
     insert[ptr;(x;v:f[x])];
     :v}[unarize f;ptr;];
   :deunarize[F;valence f]}
+
+modArgs:{[f;args]
+  if[count[args]<>v:valence[f];'length];
+  :deunarize[{[f;args;x]f[args{x[y]}'x]}[unarize f;args];v]}
+
+negate:{[f]deunarize[{not[x[y]]}[unarize f];valence f]}
+
+once:{[f;ptr]
+  v:valence f;
+  F:{[f;ptr;v;x]ptr set deunarize[{[x;y]x}[r:f[x]];v];:r}[unarize[f];ptr;v];
+  ptr set deunarize[F;v];
+  :ptr}
+
+partial:{[f;args]
+  v:valence f;
+  c:count args;
+  if[c>v;'length];
+  F:{[f;args;x]f[args,x]}[unarize[f];args];
+  :deunarize[F;v-c]}
+
+partialRight:{[f;args]
+  v:valence f;
+  c:count args;
+  if[c>v;'length];
+  F:{[f;args;x]f[x,args]}[unarize[f];args];
+  :deunarize[F;v-c]}
+
+rearg:{[f;ind]
+  v:valence f;
+  if[v<>count[ind];'length];
+  F:{[f;ind;x]f[x[ind]]}[unarize f;ind];
+  :deunarize[F;v]}
+
+/
+Todo: Figure out if there's a meaningful way to port "restParam"
+\
+
+spread:unarize
+
+throttle_:{[h;f;w;x]
+ if[x~`cancel;:canceltimer[h]];
+ if[null[timerIds[h][`id]];
+   dsc:"Qdash timer ",string[h];
+   .timer.one[.z.p+w*1000000;(cncltmrhash;h);dsc;0];
+   id:timerbydesc[dsc];
+   timerIds,:`hash`id!(h;id);
+   :f[]];}
+throttle:{[f;w]
+  if[not[checktimer[]];'"Throttle requires timer.q; run .qdash.about_timer[] for more info"];
+  h:(1?0Ng)[0];
+  :throttle_[h;f;w;]}
+
+wrap:{partial[x;enlist y]}
 
 /xxx
 /postamble.q
