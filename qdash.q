@@ -71,15 +71,12 @@ deunarize:{[f;v]
 /array.q
 /xxx
 
-/Code Disclaimer:
-/Q is a strange language where the official idiom is to write
-/code as tersely as possible (including 1-letter variable names,
-/miserly use of newlines, etc.)  I wouldn't endorse such coding
-/style for languages other than q.
-
 chunk:{y cut x}
 
-compact:{[arr]arr:arr[where {not null x} each arr];:arr[where {x<>0} each arr]}
+compact:{
+  [arr]
+  arr:arr[where {not null x} each arr];
+  :arr[where {x<>0} each arr]}
 
 difference:except
 
@@ -88,19 +85,36 @@ drop:{sublist[(y;count x);x]}
 dropRight:{sublist[(0;(count x)-y);x]}
 
 dropRightWhile:{
- [arr;pred]
- pred:fncify[pred];
- n:count[arr];
- while[and[n>0;pred[arr[n-1]]]; n-:1];
- :arr[til n]}
+  [arr;pred]
+  pred:fncify[pred];
+  n:count[arr];
+  while[and[n>0;pred[arr[n-1]]]; n-:1];
+  :arr[til n]}
 
-dropWhile:{y:fncify y;:reverse dropRightWhile[reverse[x];{y[reverse[x]]}[;y]]}
+dropWhile:{
+  [x;pred]
+  pred:fncify pred;
+  :reverse dropRightWhile[reverse[x];{y[reverse[x]]}[;pred]]}
 
-fill:{[x;v;L;R]L|:0;R&:count[`.[x]];if[L<R;.[`.;(x;L+til[R-L]);:;v]];:x}
+fill:{
+  [x;v;L;R]
+  L|:0;
+  R&:count[`.[x]];
+  if[L<R;.[`.;(x;L+til[R-L]);:;v]];:x}
 
-findIndex:{y:fncify y;n:0;while[n<count x;if[y[x[n]];:n];n+:1];:-1}
+findIndex:{
+  [x;pred]
+  pred:fncify pred;
+  n:0;
+  while[n<count x;if[pred[x[n]];:n];n+:1];
+  :-1}
 
-findLastIndex:{y:fncify y;n:(count x)-1;while[n>=0;if[y[x[n]];:n];n-:1];:-1}
+findLastIndex:{
+  [x;pred]
+  pred:fncify pred;
+  n:(count x)-1;
+  while[n>=0;if[pred[x[n]];:n];n-:1];
+  :-1}
 
 .qdash.first:first
 
@@ -108,7 +122,12 @@ flatten:raze
 
 flattenDeep:{$[type x;:x;:(),/flattenDeep each raze x]}
 
-indexOf:{if[z<0;z+:count x];z|:0;i:sublist[(z;count x);x]?y;if[(i+z)<count x;:i+z];:-1}
+indexOf:{
+  if[z<0;z+:count x];
+  z|:0;
+  i:sublist[(z;count x);x]?y;
+  if[(i+z)<count x;:i+z];
+  :-1}
 
 initial:{((count x)-1)#x}
 
@@ -120,13 +139,20 @@ with q's lack of variadic functions
 
 .qdash.last:last
 
-lastIndexOf:{c:-1+count x;z:$[z<0;-1-z;c-z];i:indexOf[reverse x;y;z];:$[i=-1;-1;c-i]}
+lastIndexOf:{
+  c:-1+count x;
+  z:$[z<0;-1-z;c-z];
+  i:indexOf[reverse x;y;z];
+  :$[i=-1;-1;c-i]}
 
 pull:mutator[except;2]
 
 pullAt:mutator[{x[(til count x) except y]};2]
 
-filter:{y:fncify y;:exec c from ([]c:x) where y[c]}
+filter:{
+  [x;pred]
+  pred:fncify pred;
+  :exec c from ([]c:x) where pred[c]}
 
 remove:mutator[filter;2]
 
@@ -142,9 +168,19 @@ take:{$[y>count x;:x;:y#x]}
 
 takeRight:{$[y>count x;:x;:(0-y)#x]}
 
-takeRightWhile:{y:fncify y;i:0;c:count x;while[and[i<c;y[(0-i)#x]];i+:1];:(0-i)#x}
+takeRightWhile:{
+  pred:fncify pred;
+  i:0;
+  c:count x;
+  while[and[i<c;pred[(0-i)#x]];i+:1];
+  :(0-i)#x}
 
-takeWhile:{y:fncify y;i:0;c:count x;while[and[i<c;y[i#x]];i+:1];:i#x}
+takeWhile:{
+  pred:fncify pred;
+  i:0;
+  c:count x;
+  while[and[i<c;pred[i#x]];i+:1];
+  :i#x}
 
 /
 Todo: figure out whether "union" can be ported in in a meaningful
@@ -171,12 +207,6 @@ zipWith:{y each [flip x]}
 /chain.q
 /xxx
 
-/Code Disclaimer:
-/Q is a strange language where the official idiom is to write
-/code as tersely as possible (including 1-letter variable names,
-/miserly use of newlines, etc.)  I wouldn't endorse such coding
-/style for languages other than q.
-
 chain_:{`value`tap`thru`fncs!(x;{chain_[x[y];(z,x)]}[;x;y];{y[x]}[x;];y)}
 chain:chain_[;()]
 
@@ -192,43 +222,76 @@ plant:{x[`value]:(y{y[x]}/x[`fncs]);:x}
 /collection.q
 /xxx
 
-/Code Disclaimer:
-/Q is a strange language where the official idiom is to write
-/code as tersely as possible (including 1-letter variable names,
-/miserly use of newlines, etc.)  I wouldn't endorse such coding
-/style for languages other than q.
-
 at:{x[y]}
 
-countBy:{m:y{x[y]}/:x;u:distinct m;u!({count where y=x}[;m] each u)}
+countBy:{
+  m:y{x[y]}/:x;
+  u:distinct m;
+  u!({count where y=x}[;m] each u)}
 
-every:{y:fncify y;i:0;c:count x;while[i<c;$[y[x[i]];i+:1;:0b]];:1b}
+every:{
+  [x;pred]
+  pred:fncify pred;
+  i:0;
+  c:count x;
+  while[i<c;$[pred[x[i]];i+:1;:0b]];
+  :1b}
 
 /see array.q for the 'filter' function
 
-find:{y:fncify y;i:0;c:count x;while[i<c;$[y[x[i]];:x[i];i+:1]];:x[c]}
+find:{
+  pred:fncify pred;
+  i:0;
+  c:count x;
+  while[i<c;$[pred[x[i]];:x[i];i+:1]];
+  :x[c]}
 
 findLast:{find[reverse x;y]}
 
 findWhere:find
 
-forEach:{i:0;X:$[99h=type x;value x;x];c:count X;while[i<c;$[y[X[i]]~0b;:x;i+:1]];:x}
+forEach:{
+  [x;f]
+  i:0;
+  X:$[99h=type x;value x;x];
+  c:count X;
+  while[i<c;$[f[X[i]]~0b;:x;i+:1]];
+  :x}
 
 forEachRight:{reverse forEach[reverse x;y]}
 
-groupBy:{m:y{x[y]}/:x;u:distinct m;u!({z[where y=x]}[;m;x] each u)}
+groupBy:{
+  m:y{x[y]}/:x;
+  u:distinct m;
+  u!({z[where y=x]}[;m;x] each u)}
 
-includes:{c:count x;$[z<0;[z+:c;z|:0];z>=c;:0b;[while[z<c;$[x[z]~y;:1b;z+:1]];:0b]]}
+includes:{
+  c:count x;
+  $[z<0;
+    [z+:c;z|:0];
+    z>=c;
+    :0b;
+    [while[z<c;$[x[z]~y;:1b;z+:1]];
+    :0b]]}
 
 indexBy:{
- m:y{x[y]}/:x;u:distinct m;d:u!((count u)#(::));i:0;c:count x;
- while[i<c;d[m[i]]:x[i];i+:1];:d}
+  m:y{x[y]}/:x;
+  u:distinct m;
+  d:u!((count u)#(::));
+  i:0;
+  c:count x;
+  while[i<c;d[m[i]]:x[i];i+:1];
+  :d}
 
 invoke:{map[x;y[;z]]}
 
 map:{y{x[y]}/:x}
 
-partition:{y:fncify y;m:map[x;y];:(x[where m<>0];x[where m=0])}
+partition:{
+  [x;pred]
+  pred:fncify pred;
+  m:map[x;pred];
+  :(x[where m<>0];x[where m=0])}
 
 pluck:{map[x;{x[y]}[;y]]}
 
@@ -236,7 +299,10 @@ reduce:{y/[z;x]}
 
 reduceRight:{y/[z;reverse x]}
 
-reject:{y:fncify y;filter[x;{not[y[x]]}[;y]]}
+reject:{
+  [x;pred]
+  pred:fncify pred;
+  filter[x;{not[y[x]]}[;pred]]}
 
 sample:{x[y?count x]}
 
@@ -244,15 +310,20 @@ shuffle:{x[(neg c)?(c:count x)]}
 
 size:count
 
-some:{y:fncify y;not every[x;{not y[x]}[;y]]}
+some:{
+  [x;pred]
+  pred:fncify pred;
+  not every[x;{not y[x]}[;pred]]}
 
 sortBy:{x[iasc[map[x;y]]]}
 
-sortByAll:{if[0=count y;:x];
- (),/{sortByAll[x;y]}[;rest y]each exec c from`v xasc`v xgroup([]c:x;v:y[0][x])}
+sortByAll:{
+  if[0=count y;:x];
+  (),/ {sortByAll[x;y]}[;rest y] each exec c from`v xasc`v xgroup([]c:x;v:y[0][x])}
 
-sortByOrder:{T:`asc`desc!(::;{{0-y[x]}[;x]});
- sortByAll[x;{[x;y;z;T]T[z[x]][y[x]]}[;y;z;T] each til count z]}
+sortByOrder:{
+  T:`asc`desc!(::;{{0-y[x]}[;x]});
+  sortByAll[x;{[x;y;z;T]T[z[x]][y[x]]}[;y;z;T] each til count z]}
 
 qdash.where:filter
 
