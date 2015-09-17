@@ -100,6 +100,7 @@ take:{$[y>count x;:x;:y#x]}
 takeRight:{$[y>count x;:x;:(0-y)#x]}
 
 takeRightWhile:{
+  [x;pred]
   pred:fncify pred;
   i:0;
   c:count x;
@@ -107,6 +108,7 @@ takeRightWhile:{
   :(0-i)#x}
 
 takeWhile:{
+  [x;pred]
   pred:fncify pred;
   i:0;
   c:count x;

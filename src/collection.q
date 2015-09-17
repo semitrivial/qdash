@@ -20,6 +20,7 @@ every:{
 /see array.q for the 'filter' function
 
 find:{
+  [x;pred]
   pred:fncify pred;
   i:0;
   c:count x;
